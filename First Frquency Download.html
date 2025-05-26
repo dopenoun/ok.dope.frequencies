@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ok.dope :: Positive Frequency Module</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a0b3d, #2d1b69, #4c1d95);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            color: white;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: fadeInUp 1s ease-out;
+        }
+        
+        .title {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #60a5fa, #a855f7, #ec4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: #93c5fd;
+            margin-bottom: 0.5rem;
+        }
+        
+        .tagline {
+            color: #c084fc;
+            font-size: 1rem;
+        }
+        
+        .control-panel {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 2rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            animation: slideInUp 0.8s ease-out 0.2s both;
+        }
+        
+        .current-freq {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .freq-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+        
+        .freq-name {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        
+        .freq-desc {
+            color: #93c5fd;
+            margin-bottom: 1rem;
+        }
+        
+        .freq-hz {
+            font-size: 2.5rem;
+            font-family: 'Courier New', monospace;
+            color: #c084fc;
+            margin-bottom: 1.5rem;
+        }
+        
+        .play-button {
+            width: 5rem;
+            height: 5rem;
+            border-radius: 50%;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 0 auto 2rem;
+            display: block;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .play-button:hover {
+            transform: scale(1.1);
+        }
+        
+        .play-button.playing {
+            background: #ef4444;
+            animation: pulse 2s infinite;
+        }
+        
+        .play-button.stopped {
+            background: #10b981;
+        }
+        
+        .volume-control {
+            margin-bottom: 2rem;
+        }
+        
+        .volume-label {
+            text-align: center;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+        
+        .volume-slider {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            outline: none;
+            cursor: pointer;
+        }
+        
+        .volume-slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: white;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+        
+        .frequency-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .freq-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            animation: fadeInUp 0.8s ease-out;
+        }
+        
+        .freq-card:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-5px);
+        }
+        
+        .freq-card.active {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: scale(1.05);
+        }
+        
+        .card-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+        
+        .card-name {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        
+        .card-freq {
+            color: #93c5fd;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .card-desc {
+            color: #c084fc;
+            font-size: 0.8rem;
+        }
+        
+        .instructions {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            animation: fadeIn 1s ease-out 0.6s both;
+        }
+        
+        .instructions h3 {
+            text-align: center;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+        
+        .instructions ul {
+            list-style: none;
+            color: #93c5fd;
+        }
+        
+        .instructions li {
+            margin-bottom: 0.5rem;
+            padding-left: 1rem;
+            position: relative;
+        }
+        
+        .instructions li::before {
+            content: "•";
+            color: #c084fc;
+            position: absolute;
+            left: 0;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .footer p {
+            color: #c084fc;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        @media (max-width: 768px) {
+            .title { font-size: 2rem; }
+            .container { padding: 1rem; }
+            .frequency-grid { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1 class="title">Positive Frequency Module</h1>
+            <p class="subtitle">Healing frequencies for mind, body & spirit</p>
+            <p class="tagline">ok.dope :: sanctuary ⚯ transformation</p>
+        </div>
+
+        <!-- Main Control Panel -->
+        <div class="control-panel">
+            <div class="current-freq">
+                <span class="freq-icon" id="currentIcon">💗</span>
+                <h2 class="freq-name" id="freqName">Love & Healing</h2>
+                <p class="freq-desc" id="freqDesc">DNA repair and transformation</p>
+                <div class="freq-hz" id="freqHz">528 Hz</div>
+            </div>
+
+            <!-- Play/Pause Button -->
+            <button class="play-button stopped" id="playButton" onclick="togglePlayback()">
+                <span id="playIcon">▶</span>
+            </button>
+
+            <!-- Volume Control -->
+            <div class="volume-control">
+                <div class="volume-label">Volume: <span id="volumeDisplay">30</span>%</div>
+                <input type="range" class="volume-slider" id="volumeSlider" 
+                       min="0" max="100" value="30" oninput="updateVolume(this.value)">
+            </div>
+        </div>
+
+        <!-- Frequency Selection Grid -->
+        <div class="frequency-grid" id="frequencyGrid">
+            <!-- Frequency cards will be generated by JavaScript -->
+        </div>
+
+        <!-- Instructions -->
+        <div class="instructions">
+            <h3>How to Use</h3>
+            <ul>
+                <li>Choose a frequency that resonates with your current intention</li>
+                <li>Set volume to a comfortable level (start low)</li>
+                <li>Find a quiet space and allow the frequency to flow through you</li>
+                <li>Breathe deeply and let the healing vibrations work</li>
+                <li>Use for meditation, work, or whenever you need positive energy</li>
+            </ul>
+            
+            <div class="footer">
+                <p>Created with 💗 in the ok.dope framework</p>
+                <p>frequency ⚯ intention => transformation</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Frequency definitions
+        const frequencies = {
+            healing: { freq: 528, name: "Love & Healing", icon: "💗", description: "DNA repair and transformation" },
+            peace: { freq: 432, name: "Peace & Calm", icon: "🌊", description: "Natural harmony and relaxation" },
+            energy: { freq: 741, name: "Energy & Focus", icon: "⚡", description: "Mental clarity and awakening" },
+            grounding: { freq: 396, name: "Grounding", icon: "🔊", description: "Release fear and guilt" },
+            intuition: { freq: 852, name: "Intuition", icon: "👁️", description: "Third eye activation" },
+            manifestation: { freq: 963, name: "Manifestation", icon: "✨", description: "Connection to divine" }
+        };
+
+        // Audio variables
+        let audioContext = null;
+        let oscillator = null;
+        let gainNode = null;
+        let isPlaying = false;
+        let currentFrequency = 528;
+        let currentMode = 'healing';
+        let volume = 0.3;
+
+        // Initialize audio context
+        function initAudioContext() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        // Generate frequency cards
+        function generateFrequencyCards() {
+            const grid = document.getElementById('frequencyGrid');
+            grid.innerHTML = '';
+            
+            Object.entries(frequencies).forEach(([mode, data]) => {
+                const card = document.createElement('div');
+                card.className = `freq-card ${mode === currentMode ? 'active' : ''}`;
+                card.onclick = () => changeFrequency(mode);
+                
+                card.innerHTML = `
+                    <span class="card-icon">${data.icon}</span>
+                    <h3 class="card-name">${data.name}</h3>
+                    <p class="card-freq">${data.freq} Hz</p>
+                    <p class="card-desc">${data.description}</p>
+                `;
+                
+                grid.appendChild(card);
+            });
+        }
+
+        // Start frequency
+        function startFrequency() {
+            initAudioContext();
+            
+            if (audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
+
+            oscillator = audioContext.createOscillator();
+            gainNode = audioContext.createGain();
+
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(currentFrequency, audioContext.currentTime);
+            gainNode.gain.setValueAtTime(volume, audioContext.currentTime);
+
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+
+            oscillator.start();
+            isPlaying = true;
+            updatePlayButton();
+        }
+
+        // Stop frequency
+        function stopFrequency() {
+            if (oscillator) {
+                oscillator.stop();
+                oscillator = null;
+                gainNode = null;
+                isPlaying = false;
+                updatePlayButton();
+            }
+        }
+
+        // Toggle playback
+        function togglePlayback() {
+            if (isPlaying) {
+                stopFrequency();
+            } else {
+                startFrequency();
+            }
+        }
+
+        // Update play button
+        function updatePlayButton() {
+            const button = document.getElementById('playButton');
+            const icon = document.getElementById('playIcon');
+            
+            if (isPlaying) {
+                button.className = 'play-button playing';
+                icon.textContent = '⏸';
+            } else {
+                button.className = 'play-button stopped';
+                icon.textContent = '▶';
+            }
+        }
+
+        // Change frequency
+        function changeFrequency(mode) {
+            const wasPlaying = isPlaying;
+            if (isPlaying) stopFrequency();
+            
+            currentMode = mode;
+            currentFrequency = frequencies[mode].freq;
+            
+            // Update display
+            document.getElementById('currentIcon').textContent = frequencies[mode].icon;
+            document.getElementById('freqName').textContent = frequencies[mode].name;
+            document.getElementById('freqDesc').textContent = frequencies[mode].description;
+            document.getElementById('freqHz').textContent = frequencies[mode].freq + ' Hz';
+            
+            // Update cards
+            generateFrequencyCards();
+            
+            if (wasPlaying) {
+                setTimeout(() => startFrequency(), 100);
+            }
+        }
+
+        // Update volume
+        function updateVolume(newVolume) {
+            volume = newVolume / 100;
+            document.getElementById('volumeDisplay').textContent = newVolume;
+            
+            if (gainNode) {
+                gainNode.gain.setValueAtTime(volume, audioContext.currentTime);
+            }
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            generateFrequencyCards();
+            updatePlayButton();
+        });
+
+        // Handle audio context suspension (browser autoplay policies)
+        document.addEventListener('click', function() {
+            if (audioContext && audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
+        }, { once: true });
+    </script>
+</body>
+</html>
